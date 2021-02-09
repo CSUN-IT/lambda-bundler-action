@@ -1,0 +1,62 @@
+name: Lambda Bundler
+description: Create a ZIP file to be uploaded to S3 for creating a Lambda function
+inputs:
+  account-id:
+    required: true
+    description: The AWS account ID of owns this Lambda function
+  region-name:
+    required: true
+    description: The AWS region this Lambda function lives in
+    default: us-west-2
+  deployment-name:
+    required: true
+    description: The name of the Terraform deployment folder
+  file-name:
+    required: true
+    description: The name of the Terrafor file that creates this Lambda function (without the extension)
+outputs:
+  build-date:
+    description: The timestamp of when this ZIP file was made
+    value: ${{ steps.build-date.outputs.build-date }}
+  commit-hash:
+    description: The short hash of the commit being bundled
+    value: ${{ steps.git-hash.outputs.sha }}
+  zip-file:
+    description: The name of the ZIP file was built
+    value: ${{ steps.zip-file.outputs.zip-filename }}
+  zip-file-s3:
+    description: The name of the ZIP file as it'd belong in S3
+    value: ${{ steps.zip-file.outputs.zip-filename-s3 }}
+runs:
+  using: composite
+  steps:
+    - id: build-date
+      shell: bash
+      run: echo "::set-output name=build-date::$(date '+%Y%m%d%H%M%S')"
+    - id: git-hash
+      shell: bash
+      run: echo "::set-output name=sha::$(git rev-parse --short HEAD)"
+    - id: zip-file
+      shell: bash
+      env:
+        ACCOUNT_ID: ${{ inputs.account-id }}
+        REGION_NAME: ${{ inputs.region-name }}
+        DEPLOYMENT_NAME: ${{ inputs.deployment-name }}
+        FILE_NAME: ${{ inputs.file-name }}
+        DATE: ${{ steps.build-date.outputs.build-date }}
+      run: |
+        ZipFile="${ACCOUNT_ID}_${REGION_NAME}_${DEPLOYMENT_NAME}_${FILE_NAME}_${DATE}.zip"
+
+        echo "::set-output name=zip-filename::$ZipFile"
+        echo "::set-output name=zip-filename-s3::$(echo $ZipFile | sed s/_/\\//g)"
+    - shell: bash
+      env:
+        SHA: ${{ steps.git-hash.outputs.sha }}
+        DATE: ${{ steps.build-date.outputs.build-date }}
+      run: |
+        bundleVersion=$(cat <<- EOF
+        SHA: $SHA
+        Date: $DATE
+        EOF
+        )
+        echo "$bundleVersion" > ".bundle-version.txt"
