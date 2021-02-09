@@ -1,8 +1,8 @@
 # Lambda Bundler Action
 
-> :warning: Warning :warning:
+> :warning: **Warning** :warning:
 >
-> This action is mainly intended for internal CSUN use but if you find a use for this yourself, we won't stop you. Since we need to use this, we'll obey semantic versioning or else we'll break our own code.
+> This action is mainly intended for internal CSUN use but if you find a use for this yourself, we won't stop you. Since we need to use this, we'll obey semantic versioning or else we'll break our own workflows.
 
 The ZIP files we use to bundle Lambda function source code needs to be named in a specific manner and contain certain metadata. This action allows us to unify all of that behavior in a single action that we can copy/paste in our workflows instead of updating dozens of bash scripts.
 
@@ -43,3 +43,7 @@ These are the outputs created by this action:
 - `zip-file-wo-ext`: The name of the ZIP file was built (without the extension)
 - `zip-file-s3`: The name of the ZIP file as it'd belong in S3 (with the extension)
 - `zip-file-s3-wo-ext`: The name of the ZIP file as it'd belong in S3 (without the extension)
+
+## Attention CSUN Staff
+
+This repository is public by design, it **must** remain public due to [GitHub Actions only supporting pulling actions from public repositories](https://github.com/github/roadmap/issues/74). Please do **not** change the visibility of this repository and break all of our workflows; this is not the security risk you're looking for.
