@@ -22,11 +22,17 @@ outputs:
     description: The short hash of the commit being bundled
     value: ${{ steps.git-hash.outputs.sha }}
   zip-file:
-    description: The name of the ZIP file was built
-    value: ${{ steps.zip-file.outputs.zip-filename }}
+    description: The name of the ZIP file was built (with the extension)
+    value: ${{ steps.zip-file.outputs.zip-file-wo-ext }}.zip
+  zip-file-wo-ext:
+    description: The name of the ZIP file was built (without the extension)
+    value: ${{ steps.zip-file.outputs.zip-file-wo-ext }}
   zip-file-s3:
-    description: The name of the ZIP file as it'd belong in S3
-    value: ${{ steps.zip-file.outputs.zip-filename-s3 }}
+    description: The name of the ZIP file as it'd belong in S3 (with the extension)
+    value: ${{ steps.zip-file.outputs.zip-file-s3-wo-ext }}.zip
+  zip-file-s3-wo-ext:
+    description: The name of the ZIP file as it'd belong in S3 (without the extension)
+    value: ${{ steps.zip-file.outputs.zip-file-s3-wo-ext }}
 runs:
   using: composite
   steps:
@@ -45,10 +51,10 @@ runs:
         FILE_NAME: ${{ inputs.file-name }}
         DATE: ${{ steps.build-date.outputs.build-date }}
       run: |
-        ZipFile="${ACCOUNT_ID}_${REGION_NAME}_${DEPLOYMENT_NAME}_${FILE_NAME}_${DATE}.zip"
+        ZipFile="${ACCOUNT_ID}_${REGION_NAME}_${DEPLOYMENT_NAME}_${FILE_NAME}_${DATE}"
 
-        echo "::set-output name=zip-filename::$ZipFile"
-        echo "::set-output name=zip-filename-s3::$(echo $ZipFile | sed s/_/\\//g)"
+        echo "::set-output name=zip-file-wo-ext::$(echo $ZipFile)"
+        echo "::set-output name=zip-file-s3-wo-ext::$(echo $ZipFile | sed s/_/\\//g)"
     - shell: bash
       env:
         SHA: ${{ steps.git-hash.outputs.sha }}
