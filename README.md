@@ -44,6 +44,14 @@ These are the outputs created by this action:
 - `zip-file-s3`: The name of the ZIP file as it'd belong in S3 (with the extension)
 - `zip-file-s3-wo-ext`: The name of the ZIP file as it'd belong in S3 (without the extension)
 
+### Generated Files
+
+This action generates some metadata files that should be included in your Lambda ZIP files.
+
+#### `.bundle-version.txt`
+
+This action additionally creates a `.bundle-version.txt` file in `$GITHUB_WORKSPACE` that __should__ be included in your Lambda ZIP files. This file contains the time this action was run and what SHA1 (i.e. which commit) was bundled. If there is ever any doubt about which commit a Lambda ZIP contains, this file will be the truth and with a commit, you can also determine _who_ triggered this build.
+
 ## Attention CSUN Staff
 
 This repository is public by design, it **must** remain public due to [GitHub Actions only supporting pulling actions from public repositories](https://github.com/github/roadmap/issues/74). Please do **not** change the visibility of this repository and break all of our workflows; this is not the security risk you're looking for.
